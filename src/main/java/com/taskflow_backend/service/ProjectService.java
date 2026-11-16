@@ -5,6 +5,10 @@ import com.taskflow_backend.entity.Project;
 import com.taskflow_backend.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import com.taskflow_backend.dto.ProjectResponseDTO;
+
+import com.taskflow_backend.exception.ResourceNotFoundException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +23,25 @@ public class ProjectService {
     }
 
     // Create project
-    public Project createProject(Project project) {
-        return projectRepository.save(project);
-    }
+    public ProjectResponseDTO createProject(Project project) {
+    Project savedProject = projectRepository.save(project);
+
+    return convertToDTO(savedProject);
+}
 
     // Get all projects
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
+    public List<ProjectResponseDTO> getAllProjects() {
+    return projectRepository.findAll()
+            .stream()
+            .map(this::convertToDTO)
+            .toList();
+}
 
     // Get project by ID
-    public Optional<Project> getProjectById(Long id) {
-        return projectRepository.findById(id);
-    }
+    public Optional<ProjectResponseDTO> getProjectById(Long id) {
+    return projectRepository.findById(id)
+            .map(this::convertToDTO);
+}
 
     // Delete project
 
@@ -45,13 +55,32 @@ public class ProjectService {
         return true;
     }
 
-    public Optional<Project> updateProject(Long id, Project updatedProject) {
-        return projectRepository.findById(id).map(existingProject -> {
-            existingProject.setName(updatedProject.getName());
-            existingProject.setDescription(updatedProject.getDescription());
-            existingProject.setStatus(updatedProject.getStatus());
-            return projectRepository.save(existingProject);
-        });
-    }
+   public ProjectResponseDTO updateProject(Long id, Project updatedProject) {
+
+    Project existingProject = projectRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                    "Project not found with ID: " + id));
+
+    existingProject.setName(updatedProject.getName());
+    existingProject.setDescription(updatedProject.getDescription());
+    existingProject.setStatus(updatedProject.getStatus());
+
+    Project savedProject = projectRepository.save(existingProject);
+
+    return convertToDTO(savedProject);
+}
+
+
+private ProjectResponseDTO convertToDTO(Project project) {
+
+    return new ProjectResponseDTO(
+            project.getId(),
+            project.getName(),
+            project.getDescription(),
+            project.getStatus(),
+            project.getCreatedAt()
+    );
+}
+
 
 }

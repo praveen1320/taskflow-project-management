@@ -1,12 +1,13 @@
 
 package com.taskflow_backend.controller;
 
+import com.taskflow_backend.dto.ProjectResponseDTO;
 import com.taskflow_backend.entity.Project;
 import com.taskflow_backend.service.ProjectService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -24,42 +25,48 @@ public class ProjectController {
 
     // Create project
     @PostMapping
-    public Project createProject(@RequestBody Project project) {
-        return projectService.createProject(project);
-    }
+public ProjectResponseDTO createProject(@RequestBody Project project) {
+    return projectService.createProject(project);
+}
 
     // Get all projects
     @GetMapping
-    public List<Project> getAllProjects() {
-        return projectService.getAllProjects();
-    }
+public List<ProjectResponseDTO> getAllProjects() {
+    return projectService.getAllProjects();
+}
 
     // Get project by ID
     @GetMapping("/{id}")
-    public Optional<Project> getProjectById(@PathVariable Long id) {
-        return projectService.getProjectById(id);
-    }
+public ResponseEntity<ProjectResponseDTO> getProjectById(@PathVariable Long id) {
+
+    return projectService.getProjectById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+}
 
     // Delete project
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProject(@PathVariable Long id) {
+   @DeleteMapping("/{id}")
+public ResponseEntity<String> deleteProject(@PathVariable Long id) {
 
-        boolean deleted = projectService.deleteProject(id);
+    boolean deleted = projectService.deleteProject(id);
 
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok("Project deleted successfully!");
+    if (deleted) {
+        return ResponseEntity.ok("Project deleted successfully");
     }
 
-    @PutMapping("/{id}")
-    public Optional<Project> updateProject(
-            @PathVariable Long id,
-            @RequestBody Project project) {
+    return ResponseEntity.notFound().build();
+}
 
-        return projectService.updateProject(id, project);
-    }
+   @PutMapping("/{id}")
+public ResponseEntity<ProjectResponseDTO> updateProject(
+        @PathVariable Long id,
+        @RequestBody Project updatedProject) {
+
+    ProjectResponseDTO updatedResponse =
+            projectService.updateProject(id, updatedProject);
+
+    return ResponseEntity.ok(updatedResponse);
+}
 
 }
