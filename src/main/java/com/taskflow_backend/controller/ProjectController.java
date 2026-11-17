@@ -8,6 +8,8 @@ import com.taskflow_backend.service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class ProjectController {
 
     // Create project
     @PostMapping
-public ProjectResponseDTO createProject(@RequestBody Project project) {
+public ProjectResponseDTO createProject(@Valid @RequestBody Project project) {
     return projectService.createProject(project);
 }
 
@@ -61,7 +63,7 @@ public ResponseEntity<String> deleteProject(@PathVariable Long id) {
    @PutMapping("/{id}")
 public ResponseEntity<ProjectResponseDTO> updateProject(
         @PathVariable Long id,
-        @RequestBody Project updatedProject) {
+        @Valid @RequestBody Project updatedProject) {
 
     ProjectResponseDTO updatedResponse =
             projectService.updateProject(id, updatedProject);

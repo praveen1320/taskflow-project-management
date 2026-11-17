@@ -4,6 +4,9 @@ package com.taskflow_backend.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "projects")
 public class Project {
@@ -11,10 +14,19 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Project name is required")
+    @Size(max = 100, message = "Project name cannot exceed 100 characters")
     private String name;
+
+    @Size(max = 500, message = "Project description cannot exceed 500 characters")
     private String description;
+
+    @NotBlank(message = "Project status is required")
     private String status;
+    
     private LocalDateTime createdAt;
+
     public Project() {
     }
 

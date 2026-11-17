@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "tasks")
 public class Task {
@@ -14,20 +17,22 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Task title is required")
+    @Size(max = 150, message = "Task title cannot exceed 150 characters")
     private String title;
 
+    @Size(max = 500, message = "Task description cannot exceed 500 characters")
     private String description;
 
+    @NotBlank(message = "Task status is required")
     private String status;
 
     private LocalDateTime createdAt;
 
-    
-
     @ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "project_id", nullable = false)
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-private Project project;
+    @JoinColumn(name = "project_id", nullable = false)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Project project;
 
     public Task() {
     }

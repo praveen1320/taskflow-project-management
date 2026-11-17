@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.taskflow_backend.dto.TaskResponseDTO;
 
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -25,7 +27,7 @@ public class TaskController {
     @PostMapping("/project/{projectId}")
 public TaskResponseDTO createTask(
         @PathVariable Long projectId,
-        @RequestBody Task task) {
+        @Valid @RequestBody Task task) {
 
     return taskService.createTask(projectId, task);
 }
@@ -56,7 +58,7 @@ public TaskResponseDTO createTask(
     @PutMapping("/{taskId}")
 public TaskResponseDTO updateTask(
         @PathVariable Long taskId,
-        @RequestBody Task task) {
+        @Valid @RequestBody Task task) {
 
     return taskService.updateTask(taskId, task);
 }
